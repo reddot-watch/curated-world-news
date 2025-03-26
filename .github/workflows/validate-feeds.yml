@@ -1,0 +1,24 @@
+name: Validate RSS Feeds (Go)
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Weekly validation
+  workflow_dispatch:
+
+jobs:
+  validate-feeds:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+      - name: Install Dependencies
+        run: |
+          go mod init rssvalidator || true
+          go get github.com/mmcdole/gofeed
+          go get golang.org/x/sync/semaphore
+      - name: Run Validation
+        run: go run validate_feeds.go
